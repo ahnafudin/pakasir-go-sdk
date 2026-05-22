@@ -1,0 +1,28 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- Initial implementation per design spec v2 (see `docs/superpowers/specs/`).
+- `Client` with functional options (`WithHTTPClient`, `WithBaseURL`,
+  `WithTimeout`, `WithUserAgent`, `WithLogger`).
+- Payment operations: `CreatePayment`, `GetPaymentURL`, `DetailPayment`,
+  `CancelPayment`, `SimulatePayment`.
+- `Watch(ctx)` real-time polling helper with status dedup, transient/permanent
+  error classification, and ctx-based cancellation.
+- Webhook helpers: `ParseWebhook`, `ParseWebhookRequest`, `Event.Match`,
+  `Event.Verify`.
+- Typed enums: `Method` (10 payment methods) with `IsValid` / `AllMethods`;
+  `Status` (4 statuses) with `IsTerminal` / `IsKnown`.
+- Typed errors: `*APIError` plus wrappable sentinels (`ErrInvalidOrderID`,
+  `ErrInvalidAmount`, `ErrInvalidMethod`, `ErrEmptyBody`, `ErrBodyTooLarge`,
+  `ErrAmountMismatch`, `ErrOrderIDMismatch`).
+- Fuzz test for `ParseWebhook` (`FuzzParseWebhook`).
+- CI matrix on ubuntu/macos/windows × Go 1.22/1.23.
+
+[Unreleased]: https://github.com/ahnafudin/pakasir-go-sdk/compare/v0.0.0...HEAD
