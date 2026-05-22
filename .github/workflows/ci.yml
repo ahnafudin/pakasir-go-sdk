@@ -1,0 +1,138 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Least-privilege: only read the source tree.
+permissions:
+  contents: read
+
+jobs:
+  # ──────────────────────────────────────────────────────────────────────────
+  # Build & test across the full OS × Go-version matrix.
+  # -race requires CGO; setup-go provides gcc/mingw/clang on all three OSes.
+  # ──────────────────────────────────────────────────────────────────────────
+  test:
+    name: Test (${{ matrix.os }}, Go ${{ matrix.go-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        # Quoted to prevent YAML from parsing '1.22' as the float 1.22.
+        go-version: ['1.22', '1.23']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: true
+
+      - name: Print Go version
+        run: go version
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Build
+        run: go build ./...
+
+      - name: Test (race + coverage)
+        run: go test -race -count=1 -coverprofile=coverage.out ./...
+
+      # Upload coverage only once — from the primary (ubuntu / Go 1.23) leg —
+      # to avoid artifact-name collisions and keep storage usage low.
+      - name: Upload coverage artifact
+        if: matrix.os == 'ubuntu-latest' && matrix.go-version == '1.23'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.os }}-go${{ matrix.go-version }}
+          path: coverage.out
+          retention-days: 7
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Enforce ≥ 80 % total coverage.  Runs after 'test' so we reuse the same
+  # module cache and know the build is already green.
+  # ──────────────────────────────────────────────────────────────────────────
+  coverage-gate:
+    name: Coverage Gate (≥ 80%)
+    needs: [test]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go 1.23
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: true
+
+      - name: Generate coverage profile
+        run: go test -coverprofile=coverage.out ./...
+
+      - name: Enforce ≥ 80% coverage
+        run: |
+          COV=$(go tool cover -func=coverage.out | grep "^total:" | awk '{print $3}' | tr -d '%')
+          echo "Total coverage: $COV%"
+          awk -v cov="$COV" 'BEGIN{ if (cov+0 < 80) exit 1 }'
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Static analysis with staticcheck (goes beyond go vet).
+  # ──────────────────────────────────────────────────────────────────────────
+  staticcheck:
+    name: Staticcheck
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go 1.23
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: true
+
+      - name: Install staticcheck
+        run: go install honnef.co/go/tools/cmd/staticcheck@latest
+
+      - name: Run staticcheck
+        run: staticcheck ./...
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Fuzz smoke test — 30 s is enough to catch obvious panics in CI without
+  # blocking the pipeline for minutes.
+  # -run='^$' prevents normal unit tests from running alongside fuzzing;
+  # the fuzz engine takes full control of test execution.
+  # ──────────────────────────────────────────────────────────────────────────
+  fuzz-smoke:
+    name: Fuzz Smoke (FuzzParseWebhook, 30s)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go 1.23
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: true
+
+      - name: Run fuzz smoke test
+        # -run='^$' ensures no regular test cases execute — only the fuzzer runs.
+        run: go test -run='^$' -fuzz=FuzzParseWebhook -fuzztime=30s .
+
+      # If the fuzzer finds a failing corpus entry, upload it for reproduction.
+      - name: Upload fuzz corpus on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-corpus-failure
+          path: testdata/fuzz/
+          retention-days: 7
