@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0-alpha.1] - 2026-05-22
+
 ### Added
 - Initial implementation per design spec v2 (see `docs/superpowers/specs/`).
 - `Client` with functional options (`WithHTTPClient`, `WithBaseURL`,
@@ -25,4 +27,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fuzz test for `ParseWebhook` (`FuzzParseWebhook`).
 - CI matrix on ubuntu/macos/windows × Go 1.22/1.23.
 
-[Unreleased]: https://github.com/ahnafudin/pakasir-go-sdk/compare/v0.0.0...HEAD
+[Unreleased]: https://github.com/ahnafudin/pakasir-go-sdk/compare/v0.1.0-alpha.1...HEAD
+[0.1.0-alpha.1]: https://github.com/ahnafudin/pakasir-go-sdk/releases/tag/v0.1.0-alpha.1

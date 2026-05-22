@@ -1,7 +1,7 @@
 # Pakasir Go SDK — Design Spec
 
 **Date:** 2026-05-22
-**Status:** v2 (post-review, pre-implementation)
+**Status:** v2 — implemented in v0.1.0-alpha.1 (2026-05-22)
 **Repo (target):** `github.com/ahnafudin/pakasir-go-sdk`
 **Package:** `pakasir`
 **License:** MIT
@@ -13,6 +13,11 @@
   scope clarified; Watch polling semantics made explicit; Status.IsKnown(),
   Method.IsValid(), Event.Verify() added; WithLogger added; webhook replay
   mitigation documented; Windows CI added; fuzz test for ParseWebhook.
+- v2 implementation completed 2026-05-22 — tagged `v0.1.0-alpha.1`.
+  Final state: 8 source files + 8 test files (incl. fuzz), 95.8% line
+  coverage, 9 stdlib-only imports total (no external deps). Spec is now
+  reference documentation; subsequent API changes should bump the spec
+  date and module version per §11.
 
 ---
 
