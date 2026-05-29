@@ -59,7 +59,7 @@ func TestGetPaymentURL_BuildsCorrectly(t *testing.T) {
 			amount:   1000,
 			opts:     []PaymentOption{WithQRISOnly(true)},
 			wantBase: "https://app.pakasir.com/pay/slug/1000",
-			wantQ:    url.Values{"order_id": {"ORD-1"}, "qris_only": {"true"}},
+			wantQ:    url.Values{"order_id": {"ORD-1"}, "qris_only": {"1"}},
 		},
 		{
 			name:     "with-qris-only-false",

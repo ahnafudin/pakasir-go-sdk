@@ -243,7 +243,7 @@ func (c *Client) CreatePayment(
 // is not included in the URL — Pakasir's hosted page at /pay/{slug}/{amount}
 // is method-agnostic. Optional PaymentOption values control additional query
 // parameters: WithRedirectURL sets the redirect param, WithQRISOnly(true)
-// sets qris_only=true.
+// sets qris_only=1 (the value Pakasir's hosted page expects).
 //
 // Returns ErrInvalidOrderID if orderID is empty or ErrInvalidAmount if
 // amount is not positive (those cases return an empty string).
@@ -269,7 +269,9 @@ func (c *Client) GetPaymentURL(
 		q.Set("redirect", cfg.redirectURL)
 	}
 	if cfg.qrisOnlySet && cfg.qrisOnly {
-		q.Set("qris_only", "true")
+		// Pakasir's hosted page expects the literal "1" (see B.2 in the docs),
+		// not "true".
+		q.Set("qris_only", "1")
 	}
 
 	return base + "?" + q.Encode()

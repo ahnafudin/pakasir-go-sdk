@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- `GetPaymentURL` now emits `qris_only=1` (the value Pakasir's hosted page
+  expects per the official docs) instead of `qris_only=true`.
+
+### Added
+- `examples/sandbox-smoketest`: a maintainer tool that validates the SDK's
+  wire format against a live Pakasir sandbox project (create → detail →
+  simulate → detail), reading credentials from the environment.
+
 ## [0.1.0-alpha.1] - 2026-05-22
 
 ### Added
