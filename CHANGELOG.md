@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   wire format against a live Pakasir sandbox project (create → detail →
   simulate → detail), reading credentials from the environment.
 
+### Validated
+- Wire format verified end-to-end against the live Pakasir sandbox API:
+  all 18 lifecycle checks passed (GetPaymentURL, CreatePayment, DetailPayment,
+  SimulatePayment, and post-payment completion with `completed_at` parsing).
+  The `{"payment": …}` and `{"transaction": …}` envelopes, all field
+  mappings, and RFC3339 timestamp parsing match the real API.
+
 ## [0.1.0-alpha.1] - 2026-05-22
 
 ### Added
