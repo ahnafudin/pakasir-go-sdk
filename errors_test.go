@@ -32,7 +32,6 @@ func TestAPIError_Error(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			got := tc.err.Error()
@@ -75,7 +74,6 @@ func TestSentinelErrors_NonNilAndMessage(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			if tc.err == nil {
@@ -105,7 +103,6 @@ func TestSentinelErrors_WrappingIsMatchable(t *testing.T) {
 	}
 
 	for _, tc := range sentinels {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			wrapped := fmt.Errorf("ctx: %w", tc.err)
@@ -135,7 +132,6 @@ func TestSentinelErrors_Distinct(t *testing.T) {
 	}
 
 	for _, tc := range pairs {
-		tc := tc
 		t.Run(tc.nameA+"_vs_"+tc.nameB, func(t *testing.T) {
 			t.Parallel()
 			if errors.Is(tc.a, tc.b) {

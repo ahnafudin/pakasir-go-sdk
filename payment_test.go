@@ -44,45 +44,44 @@ func TestGetPaymentURL_BuildsCorrectly(t *testing.T) {
 			wantKeys: []string{"redirect", "qris_only"},
 		},
 		{
-			name:    "with-redirect",
-			method:  MethodQRIS,
-			orderID: "ORD-1",
-			amount:  1000,
-			opts:    []PaymentOption{WithRedirectURL("https://x.example/done")},
+			name:     "with-redirect",
+			method:   MethodQRIS,
+			orderID:  "ORD-1",
+			amount:   1000,
+			opts:     []PaymentOption{WithRedirectURL("https://x.example/done")},
 			wantBase: "https://app.pakasir.com/pay/slug/1000",
-			wantQ:   url.Values{"order_id": {"ORD-1"}, "redirect": {"https://x.example/done"}},
+			wantQ:    url.Values{"order_id": {"ORD-1"}, "redirect": {"https://x.example/done"}},
 		},
 		{
-			name:    "with-qris-only-true",
-			method:  MethodQRIS,
-			orderID: "ORD-1",
-			amount:  1000,
-			opts:    []PaymentOption{WithQRISOnly(true)},
+			name:     "with-qris-only-true",
+			method:   MethodQRIS,
+			orderID:  "ORD-1",
+			amount:   1000,
+			opts:     []PaymentOption{WithQRISOnly(true)},
 			wantBase: "https://app.pakasir.com/pay/slug/1000",
-			wantQ:   url.Values{"order_id": {"ORD-1"}, "qris_only": {"true"}},
+			wantQ:    url.Values{"order_id": {"ORD-1"}, "qris_only": {"true"}},
 		},
 		{
-			name:    "with-qris-only-false",
-			method:  MethodQRIS,
-			orderID: "ORD-1",
-			amount:  1000,
-			opts:    []PaymentOption{WithQRISOnly(false)},
+			name:     "with-qris-only-false",
+			method:   MethodQRIS,
+			orderID:  "ORD-1",
+			amount:   1000,
+			opts:     []PaymentOption{WithQRISOnly(false)},
 			wantBase: "https://app.pakasir.com/pay/slug/1000",
-			wantQ:   url.Values{"order_id": {"ORD-1"}},
+			wantQ:    url.Values{"order_id": {"ORD-1"}},
 			wantKeys: []string{"qris_only"},
 		},
 		{
-			name:    "special-chars-in-order-id",
-			method:  MethodQRIS,
-			orderID: "ORD/1 2",
-			amount:  500,
+			name:     "special-chars-in-order-id",
+			method:   MethodQRIS,
+			orderID:  "ORD/1 2",
+			amount:   500,
 			wantBase: "https://app.pakasir.com/pay/slug/500",
-			wantQ:   url.Values{"order_id": {"ORD/1 2"}},
+			wantQ:    url.Values{"order_id": {"ORD/1 2"}},
 		},
 	}
 
 	for _, tc := range cases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -251,7 +250,6 @@ func TestCreatePayment_ValidatesInputs(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			_, err := c.CreatePayment(context.Background(), tc.method, tc.orderID, tc.amount)
@@ -377,7 +375,6 @@ func TestDetailPayment_ValidatesInputs(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			_, err := c.DetailPayment(context.Background(), tc.orderID, tc.amount)
@@ -591,7 +588,6 @@ func TestCancelPayment_ValidatesInputs(t *testing.T) {
 		{"zero-amount", "O1", 0, ErrInvalidAmount},
 	}
 	for _, tc := range cases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			_, err := c.CancelPayment(context.Background(), tc.orderID, tc.amount)
@@ -623,7 +619,6 @@ func TestSimulatePayment_ValidatesInputs(t *testing.T) {
 		{"negative-amount", "O1", -5, ErrInvalidAmount},
 	}
 	for _, tc := range cases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			_, err := c.SimulatePayment(context.Background(), tc.orderID, tc.amount)

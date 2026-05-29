@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -369,7 +368,6 @@ func TestParseTime(t *testing.T) {
 		{"no-timezone", "2024-09-10T08:07:02", true, ""},
 	}
 	for _, tc := range cases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			got, err := parseTime(tc.input)
@@ -406,7 +404,6 @@ func TestExtractMessage(t *testing.T) {
 		{"array-body", `["a","b"]`, ""},
 	}
 	for _, tc := range cases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			got := extractMessage([]byte(tc.raw))
@@ -419,6 +416,3 @@ func TestExtractMessage(t *testing.T) {
 
 // Compile-time check: discardHandler satisfies slog.Handler.
 var _ slog.Handler = discardHandler{}
-
-// Sanity helper to keep imports honest if tests are trimmed.
-var _ = fmt.Sprintf

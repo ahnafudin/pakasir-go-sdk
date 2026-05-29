@@ -158,6 +158,43 @@ type postBody struct {
 	APIKey  string `json:"api_key"`
 }
 
+// --- Shared helpers ---
+
+// validateOrderAmount checks the order_id/amount preconditions common to every
+// transaction endpoint. Returns ErrInvalidOrderID or ErrInvalidAmount.
+func validateOrderAmount(orderID string, amount int64) error {
+	if orderID == "" {
+		return ErrInvalidOrderID
+	}
+	if amount <= 0 {
+		return ErrInvalidAmount
+	}
+	return nil
+}
+
+// postTransaction is the shared implementation for POST endpoints that take a
+// {project, order_id, amount, api_key} body and return a {"transaction": {...}}
+// envelope — namely CancelPayment and SimulatePayment. It validates inputs,
+// issues the request, and unwraps the response.
+func (c *Client) postTransaction(ctx context.Context, path, orderID string, amount int64) (*Payment, error) {
+	if err := validateOrderAmount(orderID, amount); err != nil {
+		return nil, err
+	}
+
+	body := postBody{
+		Project: c.slug,
+		OrderID: orderID,
+		Amount:  amount,
+		APIKey:  c.apiKey,
+	}
+
+	var envelope transactionResponse
+	if err := c.do(ctx, http.MethodPost, path, nil, body, &envelope); err != nil {
+		return nil, err
+	}
+	return envelope.Transaction.toPayment()
+}
+
 // --- Payment API methods ---
 
 // CreatePayment initiates a transaction using the given payment method.
@@ -176,11 +213,8 @@ func (c *Client) CreatePayment(
 	amount int64,
 	opts ...PaymentOption,
 ) (*Payment, error) {
-	if orderID == "" {
-		return nil, ErrInvalidOrderID
-	}
-	if amount <= 0 {
-		return nil, ErrInvalidAmount
+	if err := validateOrderAmount(orderID, amount); err != nil {
+		return nil, err
 	}
 	if !method.IsValid() {
 		return nil, ErrInvalidMethod
@@ -257,11 +291,8 @@ func (c *Client) DetailPayment(
 	orderID string,
 	amount int64,
 ) (*Payment, error) {
-	if orderID == "" {
-		return nil, ErrInvalidOrderID
-	}
-	if amount <= 0 {
-		return nil, ErrInvalidAmount
+	if err := validateOrderAmount(orderID, amount); err != nil {
+		return nil, err
 	}
 
 	q := url.Values{}
@@ -291,26 +322,7 @@ func (c *Client) CancelPayment(
 	orderID string,
 	amount int64,
 ) (*Payment, error) {
-	if orderID == "" {
-		return nil, ErrInvalidOrderID
-	}
-	if amount <= 0 {
-		return nil, ErrInvalidAmount
-	}
-
-	body := postBody{
-		Project: c.slug,
-		OrderID: orderID,
-		Amount:  amount,
-		APIKey:  c.apiKey,
-	}
-
-	var envelope transactionResponse
-	if err := c.do(ctx, http.MethodPost, "/api/transactioncancel", nil, body, &envelope); err != nil {
-		return nil, err
-	}
-
-	return envelope.Transaction.toPayment()
+	return c.postTransaction(ctx, "/api/transactioncancel", orderID, amount)
 }
 
 // SimulatePayment triggers a webhook callback as if the payment completed.
@@ -327,24 +339,5 @@ func (c *Client) SimulatePayment(
 	orderID string,
 	amount int64,
 ) (*Payment, error) {
-	if orderID == "" {
-		return nil, ErrInvalidOrderID
-	}
-	if amount <= 0 {
-		return nil, ErrInvalidAmount
-	}
-
-	body := postBody{
-		Project: c.slug,
-		OrderID: orderID,
-		Amount:  amount,
-		APIKey:  c.apiKey,
-	}
-
-	var envelope transactionResponse
-	if err := c.do(ctx, http.MethodPost, "/api/paymentsimulation", nil, body, &envelope); err != nil {
-		return nil, err
-	}
-
-	return envelope.Transaction.toPayment()
+	return c.postTransaction(ctx, "/api/paymentsimulation", orderID, amount)
 }
