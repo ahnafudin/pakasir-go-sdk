@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-05-30
+
+First stable public release. The public API is now covered by semantic
+versioning — breaking changes will only ship in a future major version.
+Builds on 0.1.0-alpha.1 (full initial feature set listed below) with:
+
 ### Fixed
 - `GetPaymentURL` now emits `qris_only=1` (the value Pakasir's hosted page
   expects per the official docs) instead of `qris_only=true`.
@@ -43,5 +49,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fuzz test for `ParseWebhook` (`FuzzParseWebhook`).
 - CI matrix on ubuntu/macos/windows running Go 1.26.3.
 
-[Unreleased]: https://github.com/ahnafudin/pakasir-go-sdk/compare/v0.1.0-alpha.1...HEAD
+[Unreleased]: https://github.com/ahnafudin/pakasir-go-sdk/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/ahnafudin/pakasir-go-sdk/compare/v0.1.0-alpha.1...v1.0.0
 [0.1.0-alpha.1]: https://github.com/ahnafudin/pakasir-go-sdk/releases/tag/v0.1.0-alpha.1
