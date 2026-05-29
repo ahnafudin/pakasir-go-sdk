@@ -8,7 +8,7 @@
 
 - Zero non-stdlib dependencies.
 - Single package, one import.
-- Go 1.22+ — broader compatibility than competitors.
+- Go 1.26.3 or later.
 - Real-time `Watch` helper out-of-the-box.
 - Webhook validator matching official Pakasir docs.
 
@@ -104,25 +104,35 @@ See the design spec for the full state table and error-classification rules.
 
 ## Documentation
 
-- **Design spec:** `docs/superpowers/specs/2026-05-22-pakasir-go-sdk-design.md`
 - **API reference:** [pkg.go.dev/github.com/ahnafudin/pakasir-go-sdk](https://pkg.go.dev/github.com/ahnafudin/pakasir-go-sdk) (after public release)
 
-## Why another Pakasir SDK?
+## Design philosophy
 
-| SDK | Lang | Strengths | Weaknesses |
-|---|---|---|---|
-| [`zeative/pakasir-sdk`](https://github.com/zeative/pakasir-sdk) | Node/TS | Clean class API; `watchPayment` polling | No Go; no webhook helper |
-| [`H0llyW00dzZ/pakasir-go-sdk`](https://github.com/H0llyW00dzZ/pakasir-go-sdk) | Go | Feature-rich: gRPC, QR rendering, i18n, retries | Heavy (13+ packages, `src/` subdir, `bytebufferpool` dep, Go 1.26 required) |
-| **`ahnafudin/pakasir-go-sdk`** (this) | Go | Zero non-stdlib deps, single package, Go 1.22+, official-spec webhook, real-time `Watch` | No gRPC/QR/i18n |
+This SDK targets the 90% case — REST calls plus a webhook handler — and stays
+deliberately small:
 
-Pick the one that fits your needs. Honest comparison.
+- **Zero non-stdlib dependencies.** Only the Go standard library. Nothing to
+  audit, nothing to keep up to date, no transitive supply-chain risk.
+- **One package, one import.** The entire surface lives in `package pakasir`;
+  `godoc` fits on a single page.
+- **Idiomatic Go.** `context.Context` first, functional options, typed errors
+  with `errors.Is`/`errors.As`, and channels for streaming status updates.
+- **Wire-correct.** Request and response shapes match Pakasir's REST API
+  exactly, including timestamp parsing and envelope unwrapping.
+- **Predictable by default.** No hidden retries or background work; inject a
+  custom `http.RoundTripper` if you want retry/backoff behaviour.
+
+Out of scope on purpose: gRPC, QR-image rendering, framework middleware, and
+localized error strings — keep those at the application layer.
 
 ## Security
 
 Pakasir does **not** sign webhooks. The SDK exposes `Event.Match` / `Event.Verify`
-following Pakasir's official guidance ("pastikan amount dan order_id sesuai").
-For replay/forgery defense-in-depth, see the spec's "Replay & forgery mitigation"
-section.
+following Pakasir's official guidance ("pastikan amount dan order_id sesuai") —
+validate every webhook's `order_id` and `amount` against your own records and
+reject mismatches with HTTP 403. For defense-in-depth against replay or forgery,
+restrict the webhook endpoint at your edge (CDN / reverse proxy) to Pakasir's
+source IPs and enforce idempotency on `order_id` in your database.
 
 `DetailPayment` transmits the API key as a URL query parameter (Pakasir's spec).
 The key may surface in HTTP access logs — call only from trusted server-side

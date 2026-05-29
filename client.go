@@ -141,7 +141,7 @@ func WithUserAgent(ua string) Option {
 // Defaults to a discard logger so the SDK is silent unless explicitly
 // opted in.
 //
-// Zero-dep: log/slog is stdlib in Go 1.21+.
+// Zero-dep: log/slog is part of the standard library.
 //
 // The SDK does not log request or response bodies — never the api_key or PII.
 func WithLogger(l *slog.Logger) Option {

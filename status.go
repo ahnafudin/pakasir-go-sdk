@@ -2,11 +2,10 @@ package pakasir
 
 // Status represents a Pakasir transaction status.
 //
-// Only StatusCompleted is officially documented by Pakasir; the other three
-// (StatusPending, StatusCancelled, StatusExpired) are inferred from community
-// SDKs (zeative/pakasir-sdk, H0llyW00dzZ/pakasir-go-sdk) and field
-// observation. They are expected to be stable but may evolve — use IsKnown
-// to detect future additions.
+// StatusCompleted is the status formally guaranteed by Pakasir; the other
+// three (StatusPending, StatusCancelled, StatusExpired) are observed in
+// practice and treated as stable, but may evolve over time — use IsKnown to
+// detect any future additions returned by the API.
 type Status string
 
 const (

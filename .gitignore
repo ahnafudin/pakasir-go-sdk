@@ -34,3 +34,6 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# Internal planning/design notes — kept local, not published.
+docs/superpowers/

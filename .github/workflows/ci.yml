@@ -22,8 +22,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        # Quoted to prevent YAML from parsing '1.22' as the float 1.22.
-        go-version: ['1.22', '1.23']
+        # Quoted so YAML keeps the exact version string.
+        go-version: ['1.26.3']
 
     steps:
       - uses: actions/checkout@v4
@@ -46,10 +46,10 @@ jobs:
       - name: Test (race + coverage)
         run: go test -race -count=1 -coverprofile=coverage.out ./...
 
-      # Upload coverage only once — from the primary (ubuntu / Go 1.23) leg —
-      # to avoid artifact-name collisions and keep storage usage low.
+      # Upload coverage only once — from the primary (ubuntu) leg — to avoid
+      # artifact-name collisions and keep storage usage low.
       - name: Upload coverage artifact
-        if: matrix.os == 'ubuntu-latest' && matrix.go-version == '1.23'
+        if: matrix.os == 'ubuntu-latest' && matrix.go-version == '1.26.3'
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.os }}-go${{ matrix.go-version }}
@@ -68,10 +68,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Go 1.23
+      - name: Set up Go 1.26.3
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
+          go-version: '1.26.3'
           cache: true
 
       - name: Generate coverage profile
@@ -93,10 +93,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Go 1.23
+      - name: Set up Go 1.26.3
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
+          go-version: '1.26.3'
           cache: true
 
       - name: Install staticcheck
@@ -118,10 +118,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Go 1.23
+      - name: Set up Go 1.26.3
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
+          go-version: '1.26.3'
           cache: true
 
       - name: Run fuzz smoke test
