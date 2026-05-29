@@ -14,7 +14,7 @@ import (
 )
 
 // Version is the SDK version. Bumped on each release.
-const Version = "1.0.0"
+const Version = "1.0.1"
 
 const (
 	defaultBaseURL   = "https://app.pakasir.com"

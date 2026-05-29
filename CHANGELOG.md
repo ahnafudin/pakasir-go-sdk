@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-05-30
+
+No consumer-facing API changes. This release makes the published tag pass its
+own CI and static analysis cleanly.
+
+### Fixed
+- CI: force `shell: bash` on the test job so the Windows leg parses
+  `-coverprofile=coverage.out` correctly (PowerShell mis-split it into a
+  stray `.out` package argument).
+- staticcheck S1008: simplify the final `errors.As` return in
+  `isTransientWatchError` (`watch.go`). Behaviour is identical.
+- staticcheck U1000: remove an unused test constant (`watch_test.go`).
+
 ## [1.0.0] - 2026-05-30
 
 First stable public release. The public API is now covered by semantic
@@ -49,6 +62,7 @@ Builds on 0.1.0-alpha.1 (full initial feature set listed below) with:
 - Fuzz test for `ParseWebhook` (`FuzzParseWebhook`).
 - CI matrix on ubuntu/macos/windows running Go 1.26.3.
 
-[Unreleased]: https://github.com/ahnafudin/pakasir-go-sdk/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/ahnafudin/pakasir-go-sdk/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/ahnafudin/pakasir-go-sdk/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/ahnafudin/pakasir-go-sdk/compare/v0.1.0-alpha.1...v1.0.0
 [0.1.0-alpha.1]: https://github.com/ahnafudin/pakasir-go-sdk/releases/tag/v0.1.0-alpha.1
