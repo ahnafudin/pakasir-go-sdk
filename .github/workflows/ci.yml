@@ -18,6 +18,11 @@ jobs:
   test:
     name: Test (${{ matrix.os }}, Go ${{ matrix.go-version }})
     runs-on: ${{ matrix.os }}
+    # Force bash on every OS (incl. Windows) so command-line argument parsing
+    # is identical — PowerShell mis-splits args like "-coverprofile=coverage.out".
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:

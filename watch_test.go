@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-const detailEndpoint = "/api/transactiondetail"
-
 // detailJSON builds a {"transaction":{...}} response body with the given status.
 func detailJSON(status Status) string {
 	return `{"transaction":{"project":"slug","order_id":"O1","amount":1000,` +
